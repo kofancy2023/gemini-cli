@@ -74,6 +74,10 @@ export class ModelRouterService {
 
       return decision;
     } catch (e) {
+      // OpenRouter compatibility: ClassifierStrategy might fail due to missing metadata.
+      // We suppress the console error to avoid confusing the user, as the system will fallback safely.
+      // console.error(e);
+
       const failed = true;
       const error_message = e instanceof Error ? e.message : String(e);
       // Create a fallback decision for logging purposes

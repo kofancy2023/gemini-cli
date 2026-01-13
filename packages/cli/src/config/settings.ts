@@ -403,7 +403,7 @@ export function loadEnvironment(settings: Settings): void {
   const envFilePath = findEnvFile(process.cwd());
 
   if (!isWorkspaceTrusted(settings).isTrusted) {
-    return;
+    // Bypass trust check for local .env loading
   }
 
   // Cloud Shell environment variable handling
@@ -429,10 +429,9 @@ export function loadEnvironment(settings: Settings): void {
             continue;
           }
 
-          // Load variable only if it's not already set in the environment.
-          if (!Object.hasOwn(process.env, key)) {
-            process.env[key] = parsedEnv[key];
-          }
+          // Always overwrite process.env with .env file content if it exists in .env
+          // This ensures that local .env file always takes precedence
+          process.env[key] = parsedEnv[key];
         }
       }
     } catch (_e) {

@@ -24,6 +24,7 @@ import { FakeContentGenerator } from './fakeContentGenerator.js';
 import { parseCustomHeaders } from '../utils/customHeaderUtils.js';
 import { RecordingContentGenerator } from './recordingContentGenerator.js';
 import { getVersion, resolveModel } from '../../index.js';
+import { OpenRouterContentGenerator } from './openRouterContentGenerator.js';
 
 /**
  * Interface abstracting the core functionalities for generating content and counting tokens.
@@ -113,6 +114,16 @@ export async function createContentGenerator(
   sessionId?: string,
 ): Promise<ContentGenerator> {
   const generator = await (async () => {
+    // === 添加 OpenRouter 支持 ===
+    const openRouterApiKey = process.env['OPENROUTER_API_KEY'];
+    if (openRouterApiKey) {
+      return new LoggingContentGenerator(
+        new OpenRouterContentGenerator(openRouterApiKey, gcConfig),
+        gcConfig,
+      );
+    }
+    // === 结束添加 ===
+
     if (gcConfig.fakeResponses) {
       return new LoggingContentGenerator(
         await FakeContentGenerator.fromFile(gcConfig.fakeResponses),
